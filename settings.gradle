@@ -1,0 +1,3 @@
+rootProject.name = 'max-dropwizard'
+include 'org.example.max-dropwizard'
+
