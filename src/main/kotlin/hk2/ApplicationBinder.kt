@@ -1,17 +1,17 @@
 package hk2
 
-import MaxDropwizardConfiguration
-import com.fasterxml.jackson.databind.ObjectMapper
+import client.SleeperClient
 import org.glassfish.hk2.utilities.binding.AbstractBinder
-import services.MyService
+import services.SleepyService
 import javax.inject.Singleton
+import javax.ws.rs.client.Client
 
-class ApplicationBinder: AbstractBinder() {
+class ApplicationBinder(private val client: Client): AbstractBinder() {
 
     override fun configure() {
-        bindAsContract(MyService::class.java).`in`(Singleton::class.java)
-        bindAsContract(ObjectMapper::class.java).`in`(Singleton::class.java)
-        bindAsContract(MaxDropwizardConfiguration::class.java).`in`(Singleton::class.java)
+        bind(client).to(Client::class.java)
+        bindAsContract(SleepyService::class.java).`in`(Singleton::class.java)
+        bindAsContract(SleeperClient::class.java).`in`(Singleton::class.java)
     }
 
 }
