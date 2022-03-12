@@ -15,7 +15,7 @@ open class AsyncResource {
         private val logger = LoggerFactory.getLogger(AsyncResource::class.java)
         private val threadFactory = ThreadFactoryBuilder()
             .setDaemon(true)
-            .setNameFormat("resource-worker-thread-{%d}")
+            .setNameFormat("resource-worker-thread-%d")
             .build()
         private val dispatcher = Executors.newCachedThreadPool(threadFactory).asCoroutineDispatcher()
     }
@@ -25,13 +25,16 @@ open class AsyncResource {
     fun <T> CoroutineScope.respondAsync(response: AsyncResponse, timeout: Long = 30, block: suspend () -> T) {
         launch {
             try {
-                response.setTimeout(timeout, TimeUnit.SECONDS)
+                logger.info("Handling request")
                 val output = block()
                 response.resume(output)
             } catch (e: Exception) {
                 logger.error("Exception in block", e)
                 response.resume(e)
             }
+        }.also { job ->
+            response.setTimeout(timeout, TimeUnit.SECONDS)
+            response.setTimeoutHandler { job.cancel() }
         }
     }
 }

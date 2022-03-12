@@ -1,16 +1,16 @@
 package client
 
 import MaxDropwizardConfiguration
+import client.model.BracketType
+import client.model.PlayoffMatchup
 import client.model.SleeperLeague
 import client.model.SleeperUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.jodah.failsafe.Failsafe
 import net.jodah.failsafe.RetryPolicy
-import org.glassfish.jersey.logging.LoggingFeature
+import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.util.function.Predicate
-import java.util.logging.Level
-import java.util.logging.Logger
 import javax.inject.Inject
 import javax.ws.rs.HttpMethod
 import javax.ws.rs.ProcessingException
@@ -19,11 +19,12 @@ import javax.ws.rs.client.Client
 import javax.ws.rs.client.Entity
 import javax.ws.rs.client.Invocation
 import javax.ws.rs.client.ResponseProcessingException
+import javax.ws.rs.core.GenericType
 import javax.ws.rs.core.MediaType
 
 class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, client: Client, private val mapper: ObjectMapper) {
     companion object {
-        private val logger: Logger = Logger.getLogger(this::class.simpleName)
+        private val logger = LoggerFactory.getLogger(SleeperClient::class.java)
     }
 
     private val retryPolicy: RetryPolicy<Any> = RetryPolicy<Any>()
@@ -32,9 +33,13 @@ class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, clie
             when (it) {
                 is ProcessingException -> it !is ResponseProcessingException
                 is WebApplicationException -> {
+                    logger.error(it.localizedMessage, it)
                     it.response.status > 500
                 }
-                else -> false
+                else -> {
+                    logger.error("Something happened", it)
+                    false
+                }
             }
         })
         .onRetry {
@@ -43,7 +48,7 @@ class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, clie
 
     private val webTarget = client
         .target(config.baseUrl)
-        .register(LoggingFeature(logger, Level.INFO, LoggingFeature.Verbosity.HEADERS_ONLY, 8192))
+//        .register(LoggingFeature(logger, Level.INFO, LoggingFeature.Verbosity.HEADERS_ONLY, 8192))
 
 
     fun getUser(userId: Long): SleeperUser = getUser(userId.toString())
@@ -54,8 +59,15 @@ class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, clie
         return execute(request)
     }
 
-    fun getLeaguesForSeason(userId: Long, sport: String, season: String): List<SleeperLeague> {
+    fun getLeaguesForSeason(userId: Long, sport: String, season: String): Array<SleeperLeague> {
         val path = "/user/$userId/leagues/$sport/$season"
+        val request = buildRequest(path, HttpMethod.GET)
+
+        return execute(request)
+    }
+
+    fun getPlayoffBracket(leagueId: Long, bracket: BracketType): Array<PlayoffMatchup> {
+        val path = "/league/$leagueId/${bracket.bracketName}"
         val request = buildRequest(path, HttpMethod.GET)
 
         return execute(request)
@@ -77,8 +89,11 @@ class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, clie
     }
 
     private inline fun <reified T> execute(request: Invocation): T {
-        return Failsafe.with(retryPolicy).get { _ ->
-            request.invoke(T::class.java)
+        logger.info("Returning ${T::class}")
+        val result: T = Failsafe.with(retryPolicy).get { _ ->
+            request.invoke(GenericType(T::class.java))
         }
+
+        return result
     }
 }

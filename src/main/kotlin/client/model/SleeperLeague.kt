@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SleeperLeague(
     @JsonProperty("total_rosters")
-    val leagueSize: Int,
+    val leagueSize: String,
     @JsonProperty("status")
     val status: String,
     @JsonProperty("sport")

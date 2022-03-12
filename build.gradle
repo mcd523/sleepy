@@ -16,10 +16,13 @@ dependencies {
     implementation 'io.dropwizard:dropwizard-core:2.0.28'
     implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '2.13.1'
     implementation group: 'net.jodah', name: 'failsafe', version: '2.4.4'
+    implementation group: 'org.jdbi', name: 'jdbi3-core', version: '3.28.0'
+    implementation group: 'org.jdbi', name: 'jdbi3-kotlin', version: '3.28.0'
 
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.1.210'
 }
 
 test {
