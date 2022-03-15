@@ -1,9 +1,10 @@
 package client
 
 import MaxDropwizardConfiguration
-import client.model.BracketType
+import client.model.bracket.BracketType
 import client.model.PlayoffMatchup
 import client.model.SleeperLeague
+import client.model.SleeperRoster
 import client.model.SleeperUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.jodah.failsafe.Failsafe
@@ -66,6 +67,13 @@ class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, clie
         return execute(request)
     }
 
+    fun getRostersForLeague(leagueId: Long): Array<SleeperRoster> {
+        val path = "/league/$leagueId/rosters"
+        val request = buildRequest(path, HttpMethod.GET)
+
+        return execute(request)
+    }
+
     fun getPlayoffBracket(leagueId: Long, bracket: BracketType): Array<PlayoffMatchup> {
         val path = "/league/$leagueId/${bracket.bracketName}"
         val request = buildRequest(path, HttpMethod.GET)
@@ -89,7 +97,6 @@ class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, clie
     }
 
     private inline fun <reified T> execute(request: Invocation): T {
-        logger.info("Returning ${T::class}")
         val result: T = Failsafe.with(retryPolicy).get { _ ->
             request.invoke(GenericType(T::class.java))
         }

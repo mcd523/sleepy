@@ -1,6 +1,6 @@
 package resources
 
-import client.model.BracketType
+import client.model.bracket.BracketType
 import client.model.PlayoffMatchup
 import client.model.SleeperLeague
 import client.model.SleeperUser

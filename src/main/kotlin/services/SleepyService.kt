@@ -1,10 +1,12 @@
 package services
 
 import client.SleeperClient
-import client.model.BracketType
+import client.model.bracket.BracketType
 import client.model.PlayoffMatchup
 import client.model.SleeperLeague
+import client.model.SleeperRoster
 import client.model.SleeperUser
+import client.model.bracket.Bracket
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.*
@@ -14,7 +16,7 @@ import pmapSuspend
 import javax.inject.Inject
 
 @Service
-class SleepyService @Inject constructor(val mapper: ObjectMapper, val sleeper: SleeperClient) {
+class SleepyService @Inject constructor(private val mapper: ObjectMapper, private val sleeper: SleeperClient) {
     companion object {
         private val logger = LoggerFactory.getLogger(SleepyService::class.java)
     }
@@ -27,7 +29,11 @@ class SleepyService @Inject constructor(val mapper: ObjectMapper, val sleeper: S
         return sleeper.getLeaguesForSeason(userId, sport, season).toList()
     }
 
-    fun getBracket(leagueId: Long, bracketType: BracketType): List<PlayoffMatchup> {
+    fun getRostersForLeague(leagueId: Long): List<SleeperRoster> {
+        return sleeper.getRostersForLeague(leagueId).toList()
+    }
+
+    fun getBracket(leagueId: Long, bracketType: BracketType): Bracket {
         return sleeper.getPlayoffBracket(leagueId, bracketType).toList()
     }
 
@@ -48,7 +54,30 @@ class SleepyService @Inject constructor(val mapper: ObjectMapper, val sleeper: S
             }
         }
 
-        val result = deferred.await()
+        val allLeagues = deferred.await()
+        val leagueIds = allLeagues.map { it.leagues.map { league -> league.leagueId } }.flatten()
+
+        val deferredRosters = CoroutineScope(Dispatchers.IO).async {
+            leagueIds.pmapSuspend { it to getRostersForLeague(it) }
+        }
+        val deferredBrackets = CoroutineScope(Dispatchers.IO).async {
+            leagueIds.pmapSuspend { it to getBracket(it, BracketType.WINNER) }
+        }
+
+        val rosters = deferredRosters.await().toMap()
+        val brackets = deferredBrackets.await().toMap()
+
+        val result = mutableListOf<Pair<SleeperLeague, SleeperRoster>>()
+        allLeagues.forEach { (sport, season, leagues) ->
+            leagues.forEach {
+                val winner = BracketInspector.getWinner(brackets[it.leagueId]!!)
+                val winningRoster = rosters[it.leagueId]!!.find { it.rosterId == winner }!!
+                if (winningRoster.ownerId == fullUser.userId.toString()) {
+                    result.add(it to winningRoster)
+                }
+            }
+        }
+
         return mapper.convertValue(result, JsonNode::class.java)
 
 

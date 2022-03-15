@@ -1,5 +1,6 @@
 package client.model
 
+import client.model.bracket.TeamOrigin
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class PlayoffMatchup(
@@ -19,11 +20,4 @@ data class PlayoffMatchup(
     val team1Origin: TeamOrigin?,
     @JsonProperty("t2_from")
     val team2Origin: TeamOrigin?
-)
-
-data class TeamOrigin(
-    @JsonProperty("w")
-    val winnerFromMatchup: Int?,
-    @JsonProperty("l")
-    val loserFromMatchup: Int?
 )
