@@ -9,7 +9,7 @@
 /.idea/
 /.gradle/
 /.name
-/.build/
+/build/
 /compiler.xml
 /encodings.xml
 /gradle.xml

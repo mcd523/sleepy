@@ -79,15 +79,6 @@ class SleepyService @Inject constructor(private val mapper: ObjectMapper, privat
         }
 
         return mapper.convertValue(result, JsonNode::class.java)
-
-
-//        val allLeagues = seasons.associateWith { season ->
-//            sports.associateWith { sport ->
-//                getLeaguesForSeason(fullUser.userId, sport, season)
-//            }
-//        }
-//
-//        return mapper.convertValue(allLeagues, JsonNode::class.java)
     }
 
 }
