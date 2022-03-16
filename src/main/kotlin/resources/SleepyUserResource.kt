@@ -1,9 +1,7 @@
 package resources
 
-import client.model.bracket.BracketType
-import client.model.PlayoffMatchup
-import client.model.SleeperLeague
-import client.model.SleeperUser
+import client.model.league.SleeperLeague
+import client.model.user.SleeperUser
 import org.slf4j.LoggerFactory
 import services.SleepyService
 import javax.inject.Inject
@@ -15,9 +13,9 @@ import javax.ws.rs.core.Response
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
-class SleepyResource @Inject constructor(private val sleepyService: SleepyService): AsyncResource() {
+class SleepyUserResource @Inject constructor(private val sleepyService: SleepyService): AsyncResource() {
     companion object {
-        private val logger = LoggerFactory.getLogger(SleepyResource::class.java)
+        private val logger = LoggerFactory.getLogger(SleepyUserResource::class.java)
         private val validSeasons = listOf("2018", "2019", "2020", "2021")
         private val validSports = listOf("nfl")
 
@@ -56,15 +54,6 @@ class SleepyResource @Inject constructor(private val sleepyService: SleepyServic
         @QueryParam("season") @DefaultValue("2021") season: String
     ): List<SleeperLeague> {
         return sleepyService.getLeaguesForSeason(userId, sport, season)
-    }
-
-    @GET
-    @Path("/bracket/{leagueId}/{bracketType}")
-    fun getBracketForLeague(
-        @PathParam("leagueId") leagueId: Long,
-        @PathParam("bracketType") bracketType: BracketType
-    ): List<PlayoffMatchup> {
-        return sleepyService.getBracket(leagueId, bracketType)
     }
 
     @GET

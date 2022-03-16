@@ -6,10 +6,8 @@ import io.dropwizard.Application
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
 import org.glassfish.jersey.client.ClientConfig
-import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.h2.H2DatabasePlugin
-import org.jdbi.v3.core.kotlin.KotlinPlugin
-import resources.SleepyResource
+import resources.SleepyLeagueResource
+import resources.SleepyUserResource
 import javax.ws.rs.client.ClientBuilder
 
 class MaxDropwizardApplication: Application<MaxDropwizardConfiguration>() {
@@ -49,6 +47,7 @@ class MaxDropwizardApplication: Application<MaxDropwizardConfiguration>() {
         environment.healthChecks().register("Application", ApplicationHealthCheck())
 
         // Register resource classes
-        environment.jersey().register(SleepyResource::class.java)
+        environment.jersey().register(SleepyUserResource::class.java)
+        environment.jersey().register(SleepyLeagueResource::class.java)
     }
 }

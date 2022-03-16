@@ -1,4 +1,4 @@
-package client.model.bracket
+package client.model.league.bracket
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

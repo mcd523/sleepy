@@ -1,4 +1,4 @@
-package client.model.bracket
+package client.model.league.bracket
 
 import client.model.PlayoffMatchup
 

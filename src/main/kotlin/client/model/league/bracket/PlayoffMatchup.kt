@@ -1,6 +1,6 @@
 package client.model
 
-import client.model.bracket.TeamOrigin
+import client.model.league.bracket.TeamOrigin
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class PlayoffMatchup(

@@ -1,4 +1,4 @@
-package client.model.bracket
+package client.model.league.bracket
 
 enum class BracketType(val bracketName: String) {
     WINNER("winners_bracket"),

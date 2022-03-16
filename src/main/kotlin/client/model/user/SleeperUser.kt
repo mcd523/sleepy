@@ -1,4 +1,4 @@
-package client.model
+package client.model.user
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty

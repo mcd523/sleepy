@@ -1,12 +1,11 @@
 package services
 
 import client.SleeperClient
-import client.model.bracket.BracketType
-import client.model.PlayoffMatchup
-import client.model.SleeperLeague
-import client.model.SleeperRoster
-import client.model.SleeperUser
-import client.model.bracket.Bracket
+import client.model.league.bracket.BracketType
+import client.model.league.SleeperLeague
+import client.model.league.SleeperRoster
+import client.model.user.SleeperUser
+import client.model.league.bracket.Bracket
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.*

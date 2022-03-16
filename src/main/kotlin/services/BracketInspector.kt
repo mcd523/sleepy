@@ -1,6 +1,6 @@
 package services
 
-import client.model.bracket.Bracket
+import client.model.league.bracket.Bracket
 
 object BracketInspector {
     // Return teamId of winning team from bracket
