@@ -1,8 +1,9 @@
-package client.model
+package client.model.league.bracket
 
-import client.model.league.bracket.TeamOrigin
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class PlayoffMatchup(
     @JsonProperty("r")
     val round: Int,

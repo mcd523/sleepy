@@ -25,15 +25,25 @@ class SleepyService @Inject constructor(private val mapper: ObjectMapper, privat
     }
 
     fun getLeaguesForSeason(userId: Long, sport: String, season: String): List<SleeperLeague> {
-        return sleeper.getLeaguesForSeason(userId, sport, season).toList()
+        return sleeper.getLeaguesForSeason(userId, sport, season)
     }
 
     fun getRostersForLeague(leagueId: Long): List<SleeperRoster> {
-        return sleeper.getRostersForLeague(leagueId).toList()
+        return sleeper.getRostersForLeague(leagueId)
+    }
+
+    suspend fun getUsersForLeague(leagueId: Long): List<SleeperUser> {
+        return getRostersForLeague(leagueId).pmapSuspend {
+            getUserById(it.ownerId!!)
+        }
+    }
+
+    fun getUserById(ownerId: Long): SleeperUser {
+        return sleeper.getUser(ownerId)
     }
 
     fun getBracket(leagueId: Long, bracketType: BracketType): Bracket {
-        return sleeper.getPlayoffBracket(leagueId, bracketType).toList()
+        return sleeper.getPlayoffBracket(leagueId, bracketType)
     }
 
     data class LeagueSeason(val sport: String, val season: String, val leagues: List<SleeperLeague>)
@@ -59,7 +69,7 @@ class SleepyService @Inject constructor(private val mapper: ObjectMapper, privat
         val deferredRosters = CoroutineScope(Dispatchers.IO).async {
             leagueIds.pmapSuspend { it to getRostersForLeague(it) }
         }
-        val deferredBrackets = CoroutineScope(Dispatchers.IO).async {
+        val deferredBrackets: Deferred<List<Pair<Long, Bracket>>> = CoroutineScope(Dispatchers.IO).async {
             leagueIds.pmapSuspend { it to getBracket(it, BracketType.WINNER) }
         }
 
@@ -71,7 +81,7 @@ class SleepyService @Inject constructor(private val mapper: ObjectMapper, privat
             leagues.forEach {
                 val winner = BracketInspector.getWinner(brackets[it.leagueId]!!)
                 val winningRoster = rosters[it.leagueId]!!.find { it.rosterId == winner }!!
-                if (winningRoster.ownerId == fullUser.userId.toString()) {
+                if (winningRoster.ownerId == fullUser.userId) {
                     result.add(it to winningRoster)
                 }
             }

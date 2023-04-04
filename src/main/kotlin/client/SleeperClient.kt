@@ -2,7 +2,6 @@ package client
 
 import MaxDropwizardConfiguration
 import client.model.league.bracket.BracketType
-import client.model.PlayoffMatchup
 import client.model.draft.SleeperDraft
 import client.model.draft.SleeperPick
 import client.model.league.*
@@ -62,107 +61,107 @@ class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, clie
         val path = "/user/$userName"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<SleeperUser>() {})
     }
 
     // LEAGUES
-    fun getLeaguesForSeason(userId: Long, sport: String, season: String): Array<SleeperLeague> {
+    fun getLeaguesForSeason(userId: Long, sport: String, season: String): List<SleeperLeague> {
         val path = "/user/$userId/leagues/$sport/$season"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperLeague>>() {})
     }
 
     fun getLeagueById(leagueId: Long): SleeperLeague {
         val path = "/league/$leagueId"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<SleeperLeague>() {})
     }
 
-    fun getRostersForLeague(leagueId: Long): Array<SleeperRoster> {
+    fun getRostersForLeague(leagueId: Long): List<SleeperRoster> {
         val path = "/league/$leagueId/rosters"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperRoster>>() {})
     }
 
-    fun getUsersForLeague(leagueId: Long): Array<SleeperUser> {
+    fun getUsersForLeague(leagueId: Long): List<SleeperUser> {
         val path = "/league/$leagueId/users"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperUser>>() {})
     }
 
-    fun getMatchupsForLeague(leagueId: Long, week: Long): Array<SleeperMatchup>  {
+    fun getMatchupsForLeague(leagueId: Long, week: Long): List<SleeperMatchup>  {
         val path = "/league/$leagueId/matchups/$week"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperMatchup>>() {})
     }
 
     fun getPlayoffBracket(leagueId: Long, bracket: BracketType): Bracket {
         val path = "/league/$leagueId/${bracket.bracketName}"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<Bracket>() {})
     }
 
-    fun getLeagueTransactions(leagueId: Long, round: Long): Array<SleeperTransaction> {
+    fun getLeagueTransactions(leagueId: Long, round: Long): List<SleeperTransaction> {
         val path = "/league/$leagueId/transactions/$round"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperTransaction>>() {})
     }
 
-    fun getTradedPicksForLeague(leagueId: Long): Array<SleeperTradedPick> {
+    fun getTradedPicksForLeague(leagueId: Long): List<SleeperTradedPick> {
         val path = "/league/$leagueId/traded_picks"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperTradedPick>>() {})
     }
 
     fun getState(sport: String): SleeperState {
         val path = "/state/$sport"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<SleeperState>() {})
     }
 
     // DRAFTS
-    fun getDraftsForUser(userId: Long, sport: String, season: String): Array<SleeperDraft> {
+    fun getDraftsForUser(userId: Long, sport: String, season: String): List<SleeperDraft> {
         val path = "/user/$userId/drafts/$sport/$season"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperDraft>>() {})
     }
 
-    fun getDraftsForLeague(leagueId: Long): Array<SleeperDraft> {
+    fun getDraftsForLeague(leagueId: Long): List<SleeperDraft> {
         val path = "/user/$leagueId/drafts"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperDraft>>() {})
     }
 
     fun getDraft(draftId: Long): SleeperDraft {
         val path = "/draft/$draftId"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<SleeperDraft>() {})
     }
 
-    fun getPicksForDraft(draftId: Long): Array<SleeperPick> {
+    fun getPicksForDraft(draftId: Long): List<SleeperPick> {
         val path = "/draft/$draftId/picks"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperPick>>() {})
     }
 
-    fun getTradedPicksForDraft(draftId: Long): Array<SleeperTradedPick> {
+    fun getTradedPicksForDraft(draftId: Long): List<SleeperTradedPick> {
         val path = "/draft/$draftId/traded_picks"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<SleeperTradedPick>>() {})
     }
 
     // PLAYERS
@@ -170,15 +169,15 @@ class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, clie
         val path = "/players/$sport"
         val request = buildRequest(path, HttpMethod.GET)
 
-        return execute(request)
+        return execute(request, object: GenericType<Map<String, SleeperPlayer>>() {})
     }
 
-    fun getTrendingPlayers(sport: String, type: PlayerTrend, lookbackHours: Long = 24, limit: Long = 25): Array<TrendingPlayer> {
+    fun getTrendingPlayers(sport: String, type: PlayerTrend, lookbackHours: Long = 24, limit: Long = 25): List<TrendingPlayer> {
         val path = "/players/$sport/trending/${type.trendName}"
         val queryParams = buildQueryParams(listOf("lookback_hours" to lookbackHours, "limit" to limit))
         val request = buildRequest(path, HttpMethod.GET, queryParams)
 
-        return execute(request)
+        return execute(request, object: GenericType<List<TrendingPlayer>>() {})
     }
 
     private fun buildRequest(
@@ -209,9 +208,9 @@ class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, clie
         return final
     }
 
-    private inline fun <reified T> execute(request: Invocation): T {
+    private inline fun <reified T: Any> execute(request: Invocation, genericType: GenericType<T>): T {
         val result: T = Failsafe.with(retryPolicy).get { _ ->
-            request.invoke(GenericType(T::class.java))
+            request.invoke(genericType)
         }
 
         return result

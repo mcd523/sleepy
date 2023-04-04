@@ -6,5 +6,5 @@ import javax.validation.Constraint
 @Retention
 @Constraint(validatedBy = [SeasonsValidator::class])
 annotation class ValidSeasons(
-    val message: String = "\${validatedValue} is not an existing account type.", // Final message to client is preceeded by indicator of invalid param name such as "path param type "
+    val message: String = "\${validatedValue} is not a valid Sleeper season.", // Final message to client is preceeded by indicator of invalid param name such as "path param type "
 )

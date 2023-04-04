@@ -10,7 +10,7 @@ data class SleeperRoster(
     @JsonProperty("players")
     val players: List<String>,
     @JsonProperty("owner_id")
-    val ownerId: String?,
+    val ownerId: Long?,
     @JsonProperty("league_id")
-    val leagueId: String
+    val leagueId: Long
 )

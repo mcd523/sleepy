@@ -1,11 +1,14 @@
 package resources
 
-import client.model.PlayoffMatchup
 import client.model.league.SleeperRoster
 import client.model.league.bracket.BracketType
+import client.model.league.bracket.PlayoffMatchup
+import client.model.user.SleeperUser
 import services.SleepyService
 import javax.inject.Inject
 import javax.ws.rs.*
+import javax.ws.rs.container.AsyncResponse
+import javax.ws.rs.container.Suspended
 import javax.ws.rs.core.MediaType
 
 @Path("/league")
@@ -26,7 +29,16 @@ class SleepyLeagueResource @Inject constructor(private val sleepyService: Sleepy
         @PathParam("leagueId") leagueId: Long,
         @PathParam("bracketType") bracketType: BracketType
     ): List<PlayoffMatchup> {
-        return sleepyService.getBracket(leagueId, bracketType)
+        val bracket = sleepyService.getBracket(leagueId, bracketType)
+        return bracket
+    }
+
+    @GET
+    @Path("/{leagueId}/members")
+    fun getLeagueMembers(@Suspended asyncResponse: AsyncResponse, @PathParam("leagueId") leagueId: Long){
+        return workerScope.respondAsync(asyncResponse) {
+            sleepyService.getUsersForLeague(leagueId)
+        }
     }
 
 }

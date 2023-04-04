@@ -1,0 +1,10 @@
+GET http://localhost:8080/user/thehippokid
+
+###
+GET http://localhost:8080/user/winner/thehippokid
+
+###
+GET http://localhost:8080/league/bracket/727997364425617408/WINNER
+
+###
+GET http://localhost:8080/league/727997364425617408/members
