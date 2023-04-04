@@ -13,7 +13,7 @@ val jdbiVersion = "3.37.1"
 val junitVersion = "5.9.2"
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("io.dropwizard:dropwizard-core:2.1.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
