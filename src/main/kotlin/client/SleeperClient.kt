@@ -1,6 +1,6 @@
 package client
 
-import MaxDropwizardConfiguration
+import SleepyConfiguration
 import client.model.league.bracket.BracketType
 import client.model.draft.SleeperDraft
 import client.model.draft.SleeperPick
@@ -11,23 +11,23 @@ import client.model.player.SleeperPlayer
 import client.model.player.TrendingPlayer
 import client.model.user.SleeperUser
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.inject.Inject
+import jakarta.ws.rs.HttpMethod
+import jakarta.ws.rs.ProcessingException
+import jakarta.ws.rs.WebApplicationException
+import jakarta.ws.rs.client.Client
+import jakarta.ws.rs.client.Entity
+import jakarta.ws.rs.client.Invocation
+import jakarta.ws.rs.client.ResponseProcessingException
+import jakarta.ws.rs.core.GenericType
+import jakarta.ws.rs.core.MediaType
 import net.jodah.failsafe.Failsafe
 import net.jodah.failsafe.RetryPolicy
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.util.function.Predicate
-import javax.inject.Inject
-import javax.ws.rs.HttpMethod
-import javax.ws.rs.ProcessingException
-import javax.ws.rs.WebApplicationException
-import javax.ws.rs.client.Client
-import javax.ws.rs.client.Entity
-import javax.ws.rs.client.Invocation
-import javax.ws.rs.client.ResponseProcessingException
-import javax.ws.rs.core.GenericType
-import javax.ws.rs.core.MediaType
 
-class SleeperClient @Inject constructor(config: MaxDropwizardConfiguration, client: Client, private val mapper: ObjectMapper) {
+class SleeperClient @Inject constructor(config: SleepyConfiguration, client: Client, private val mapper: ObjectMapper) {
     companion object {
         private val logger = LoggerFactory.getLogger(SleeperClient::class.java)
     }

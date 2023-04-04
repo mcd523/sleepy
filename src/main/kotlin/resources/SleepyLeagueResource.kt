@@ -4,12 +4,15 @@ import client.model.league.SleeperRoster
 import client.model.league.bracket.BracketType
 import client.model.league.bracket.PlayoffMatchup
 import client.model.user.SleeperUser
+import jakarta.inject.Inject
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.PathParam
+import jakarta.ws.rs.Produces
+import jakarta.ws.rs.container.AsyncResponse
+import jakarta.ws.rs.container.Suspended
+import jakarta.ws.rs.core.MediaType
 import services.SleepyService
-import javax.inject.Inject
-import javax.ws.rs.*
-import javax.ws.rs.container.AsyncResponse
-import javax.ws.rs.container.Suspended
-import javax.ws.rs.core.MediaType
 
 @Path("/league")
 @Produces(MediaType.APPLICATION_JSON)

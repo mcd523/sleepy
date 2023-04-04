@@ -2,18 +2,22 @@ package resources
 
 import client.model.league.SleeperLeague
 import client.model.user.SleeperUser
+import jakarta.inject.Inject
+import jakarta.ws.rs.*
+import jakarta.ws.rs.container.AsyncResponse
+import jakarta.ws.rs.container.Suspended
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
 import org.slf4j.LoggerFactory
+import redis.SleepyCache
 import services.SleepyService
-import javax.inject.Inject
-import javax.ws.rs.*
-import javax.ws.rs.container.AsyncResponse
-import javax.ws.rs.container.Suspended
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
-class SleepyUserResource @Inject constructor(private val sleepyService: SleepyService): AsyncResource() {
+class SleepyUserResource @Inject constructor(
+    private val sleepyService: SleepyService,
+    private val sleepyCache: SleepyCache
+): AsyncResource() {
     companion object {
         private val logger = LoggerFactory.getLogger(SleepyUserResource::class.java)
         private val validSeasons = listOf("2018", "2019", "2020", "2021")
@@ -42,8 +46,8 @@ class SleepyUserResource @Inject constructor(private val sleepyService: SleepySe
 
     @GET
     @Path("/{name}")
-    fun getUser(@PathParam("name") name: String): SleeperUser {
-        return sleepyService.getUser(name)
+    fun getUser(@PathParam("name") name: String, @QueryParam("cache") cache: Boolean = false): SleeperUser {
+        return sleepyService.getUser(name, cache)
     }
 
     @GET
@@ -69,6 +73,22 @@ class SleepyUserResource @Inject constructor(private val sleepyService: SleepySe
 
         workerScope.respondAsync(response) {
             sleepyService.getMyWinningLeagues(userName, validatedSports, validatedSeasons)
+        }
+    }
+
+    @GET
+    @Path("redis")
+    fun getFoo(@Suspended response: AsyncResponse) {
+        workerScope.respondAsync(response) {
+            sleepyCache.getFoo()
+        }
+    }
+
+    @POST
+    @Path("redis")
+    fun setFoo(@Suspended response: AsyncResponse) {
+        workerScope.respondAsync(response) {
+            sleepyCache.setFoo()
         }
     }
 

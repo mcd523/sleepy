@@ -1,6 +1,7 @@
 package resources.validation
 
-import javax.validation.Constraint
+import jakarta.validation.Constraint
+
 
 @Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER)
 @Retention

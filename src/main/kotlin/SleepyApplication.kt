@@ -1,28 +1,28 @@
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import health.ApplicationHealthCheck
 import hk2.ApplicationBinder
-import io.dropwizard.Application
-import io.dropwizard.setup.Bootstrap
-import io.dropwizard.setup.Environment
+import io.dropwizard.core.Application
+import io.dropwizard.core.setup.Bootstrap
+import io.dropwizard.core.setup.Environment
+import jakarta.ws.rs.client.ClientBuilder
 import org.glassfish.jersey.client.ClientConfig
 import resources.SleepyLeagueResource
 import resources.SleepyUserResource
-import javax.ws.rs.client.ClientBuilder
 
-class MaxDropwizardApplication: Application<MaxDropwizardConfiguration>() {
+class SleepyApplication: Application<SleepyConfiguration>() {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            MaxDropwizardApplication().run(*args)
+            SleepyApplication().run(*args)
         }
     }
 
-    override fun initialize(bootstrap: Bootstrap<MaxDropwizardConfiguration>) {
+    override fun initialize(bootstrap: Bootstrap<SleepyConfiguration>) {
 
     }
 
-    override fun run(configuration: MaxDropwizardConfiguration?, environment: Environment?) {
+    override fun run(configuration: SleepyConfiguration?, environment: Environment?) {
         if (environment == null) return
 
         // Configure db

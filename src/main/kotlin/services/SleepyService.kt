@@ -8,20 +8,36 @@ import client.model.user.SleeperUser
 import client.model.league.bracket.Bracket
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.inject.Inject
 import kotlinx.coroutines.*
 import org.jvnet.hk2.annotations.Service
 import org.slf4j.LoggerFactory
 import pmapSuspend
-import javax.inject.Inject
+import redis.SleepyCache
 
 @Service
-class SleepyService @Inject constructor(private val mapper: ObjectMapper, private val sleeper: SleeperClient) {
+class SleepyService @Inject constructor(
+    private val mapper: ObjectMapper,
+    private val sleeper: SleeperClient,
+    private val sleepyCache: SleepyCache
+) {
     companion object {
         private val logger = LoggerFactory.getLogger(SleepyService::class.java)
     }
 
-    fun getUser(userName: String): SleeperUser {
-        return sleeper.getUser(userName)
+    fun getUser(userName: String, cache: Boolean = false): SleeperUser {
+        return if (cache) {
+            runBlocking {
+                sleepyCache.getUser(userName) ?: run {
+                    val httpUser = sleeper.getUser(userName)
+                    sleepyCache.setUser(userName, httpUser)
+
+                    httpUser
+                }
+            }
+        } else {
+            sleeper.getUser(userName)
+        }
     }
 
     fun getLeaguesForSeason(userId: Long, sport: String, season: String): List<SleeperLeague> {

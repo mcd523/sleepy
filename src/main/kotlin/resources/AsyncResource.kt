@@ -1,6 +1,7 @@
 package resources
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import jakarta.ws.rs.container.AsyncResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -8,7 +9,6 @@ import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import javax.ws.rs.container.AsyncResponse
 
 open class AsyncResource {
     companion object {
