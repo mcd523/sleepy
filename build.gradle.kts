@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "1.8.20"
 }
 
 group = "org.sleepy"
@@ -14,9 +14,9 @@ val junitVersion = "5.9.2"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("io.dropwizard:dropwizard-core:2.1.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     implementation("net.jodah:failsafe:2.4.4")
     implementation("org.jdbi:jdbi3-core:$jdbiVersion")
     implementation("org.jdbi:jdbi3-kotlin:$jdbiVersion")
