@@ -1,7 +1,5 @@
 package resources
 
-import client.model.league.SleeperLeague
-import client.model.user.SleeperUser
 import jakarta.inject.Inject
 import jakarta.ws.rs.*
 import jakarta.ws.rs.container.AsyncResponse
@@ -9,14 +7,12 @@ import jakarta.ws.rs.container.Suspended
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import org.slf4j.LoggerFactory
-import redis.SleepyCache
 import services.SleepyService
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 class SleepyUserResource @Inject constructor(
-    private val sleepyService: SleepyService,
-    private val sleepyCache: SleepyCache
+    private val sleepyService: SleepyService
 ): AsyncResource() {
     companion object {
         private val logger = LoggerFactory.getLogger(SleepyUserResource::class.java)
@@ -46,18 +42,26 @@ class SleepyUserResource @Inject constructor(
 
     @GET
     @Path("/{name}")
-    fun getUser(@PathParam("name") name: String, @QueryParam("cache") cache: Boolean = false): SleeperUser {
-        return sleepyService.getUser(name, cache)
+    fun getUser(
+        @Suspended response: AsyncResponse,
+        @PathParam("name") name: String
+    ) {
+        workerScope.respondAsync(response) {
+            sleepyService.getUser(name)
+        }
     }
 
     @GET
     @Path("/{userId}/leagues")
     fun getLeagues(
+        @Suspended response: AsyncResponse,
         @PathParam("userId") userId: Long,
         @QueryParam("sport") @DefaultValue("nfl") sport: String,
         @QueryParam("season") @DefaultValue("2021") season: String
-    ): List<SleeperLeague> {
-        return sleepyService.getLeaguesForSeason(userId, sport, season)
+    ) {
+        workerScope.respondAsync(response) {
+            sleepyService.getLeaguesForSeason(userId, sport, season)
+        }
     }
 
     @GET
@@ -75,21 +79,4 @@ class SleepyUserResource @Inject constructor(
             sleepyService.getMyWinningLeagues(userName, validatedSports, validatedSeasons)
         }
     }
-
-    @GET
-    @Path("redis")
-    fun getFoo(@Suspended response: AsyncResponse) {
-        workerScope.respondAsync(response) {
-            sleepyCache.getFoo()
-        }
-    }
-
-    @POST
-    @Path("redis")
-    fun setFoo(@Suspended response: AsyncResponse) {
-        workerScope.respondAsync(response) {
-            sleepyCache.setFoo()
-        }
-    }
-
 }

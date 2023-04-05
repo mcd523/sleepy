@@ -11,22 +11,22 @@ repositories {
 
 val jdbiVersion = "3.37.1"
 val junitVersion = "5.9.2"
+val kotlinCoroutinesVersion = "1.6.4"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlinCoroutinesVersion")
     implementation("io.dropwizard:dropwizard-core:4.0.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
-    implementation("net.jodah:failsafe:2.4.4")
     implementation("org.jdbi:jdbi3-core:$jdbiVersion")
     implementation("org.jdbi:jdbi3-kotlin:$jdbiVersion")
 
     implementation("io.github.crackthecodeabhi:kreds:0.8.1")
-
+    implementation("com.michael-bull.kotlin-retry:kotlin-retry:1.0.9")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-    testImplementation("com.h2database:h2:2.1.214")
 }
 
 tasks.test {

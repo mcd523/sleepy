@@ -15,7 +15,7 @@ open class AsyncResource {
         private val logger = LoggerFactory.getLogger(AsyncResource::class.java)
         private val threadFactory = ThreadFactoryBuilder()
             .setDaemon(true)
-            .setNameFormat("resource-worker-thread-%d")
+            .setNameFormat("async-resource-thread-%d")
             .build()
         private val dispatcher = Executors.newCachedThreadPool(threadFactory).asCoroutineDispatcher()
     }

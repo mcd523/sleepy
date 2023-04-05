@@ -25,26 +25,15 @@ class SleepyService @Inject constructor(
         private val logger = LoggerFactory.getLogger(SleepyService::class.java)
     }
 
-    fun getUser(userName: String, cache: Boolean = false): SleeperUser {
-        return if (cache) {
-            runBlocking {
-                sleepyCache.getUser(userName) ?: run {
-                    val httpUser = sleeper.getUser(userName)
-                    sleepyCache.setUser(userName, httpUser)
-
-                    httpUser
-                }
-            }
-        } else {
-            sleeper.getUser(userName)
-        }
+    suspend fun getUser(userName: String): SleeperUser {
+        return sleepyCache.getUser(userName)
     }
 
-    fun getLeaguesForSeason(userId: Long, sport: String, season: String): List<SleeperLeague> {
+    suspend fun getLeaguesForSeason(userId: Long, sport: String, season: String): List<SleeperLeague> {
         return sleeper.getLeaguesForSeason(userId, sport, season)
     }
 
-    fun getRostersForLeague(leagueId: Long): List<SleeperRoster> {
+    suspend fun getRostersForLeague(leagueId: Long): List<SleeperRoster> {
         return sleeper.getRostersForLeague(leagueId)
     }
 
@@ -54,11 +43,11 @@ class SleepyService @Inject constructor(
         }
     }
 
-    fun getUserById(ownerId: Long): SleeperUser {
+    suspend fun getUserById(ownerId: Long): SleeperUser {
         return sleeper.getUser(ownerId)
     }
 
-    fun getBracket(leagueId: Long, bracketType: BracketType): Bracket {
+    suspend fun getBracket(leagueId: Long, bracketType: BracketType): Bracket {
         return sleeper.getPlayoffBracket(leagueId, bracketType)
     }
 

@@ -1,9 +1,6 @@
 package resources
 
-import client.model.league.SleeperRoster
 import client.model.league.bracket.BracketType
-import client.model.league.bracket.PlayoffMatchup
-import client.model.user.SleeperUser
 import jakarta.inject.Inject
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -21,25 +18,33 @@ class SleepyLeagueResource @Inject constructor(private val sleepyService: Sleepy
     @GET
     @Path("/bracket/{leagueId}")
     fun getRostersForLeague(
+        @Suspended response: AsyncResponse,
         @PathParam("leagueId") leagueId: Long
-    ): List<SleeperRoster> {
-        return sleepyService.getRostersForLeague(leagueId)
+    ) {
+        workerScope.respondAsync(response) {
+            sleepyService.getRostersForLeague(leagueId)
+        }
     }
 
     @GET
     @Path("/bracket/{leagueId}/{bracketType}")
     fun getBracketForLeague(
+        @Suspended response: AsyncResponse,
         @PathParam("leagueId") leagueId: Long,
         @PathParam("bracketType") bracketType: BracketType
-    ): List<PlayoffMatchup> {
-        val bracket = sleepyService.getBracket(leagueId, bracketType)
-        return bracket
+    ) {
+        workerScope.respondAsync(response) {
+            sleepyService.getBracket(leagueId, bracketType)
+        }
     }
 
     @GET
     @Path("/{leagueId}/members")
-    fun getLeagueMembers(@Suspended asyncResponse: AsyncResponse, @PathParam("leagueId") leagueId: Long){
-        return workerScope.respondAsync(asyncResponse) {
+    fun getLeagueMembers(
+        @Suspended asyncResponse: AsyncResponse,
+        @PathParam("leagueId") leagueId: Long
+    ) {
+        workerScope.respondAsync(asyncResponse) {
             sleepyService.getUsersForLeague(leagueId)
         }
     }
