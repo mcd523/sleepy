@@ -14,7 +14,7 @@ data class SleeperPlayer(
     @JsonProperty("sport")
     val sport: String,
     @JsonProperty("fantasy_positions")
-    val positions: List<String>,
+    val positions: List<String>?,
     @JsonProperty("number")
     val number: Long,
     @JsonProperty("search_last_name")

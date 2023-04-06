@@ -6,6 +6,7 @@ import client.model.league.SleeperLeague
 import client.model.league.SleeperRoster
 import client.model.user.SleeperUser
 import client.model.league.bracket.Bracket
+import client.model.player.SleeperPlayer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.inject.Inject
@@ -17,12 +18,14 @@ import redis.SleepyCache
 
 @Service
 class SleepyService @Inject constructor(
-    private val mapper: ObjectMapper,
     private val sleeper: SleeperClient,
     private val sleepyCache: SleepyCache
 ) {
     companion object {
         private val logger = LoggerFactory.getLogger(SleepyService::class.java)
+
+        data class LeagueSeason(val sport: String, val season: String, val leagues: List<SleeperLeague>)
+        data class LeagueRoster(val league: SleeperLeague, val roster: SleeperRoster)
     }
 
     suspend fun getUser(userName: String): SleeperUser {
@@ -34,7 +37,7 @@ class SleepyService @Inject constructor(
     }
 
     suspend fun getRostersForLeague(leagueId: Long): List<SleeperRoster> {
-        return sleeper.getRostersForLeague(leagueId)
+        return sleepyCache.getLeagueRosters(leagueId)
     }
 
     suspend fun getUsersForLeague(leagueId: Long): List<SleeperUser> {
@@ -44,31 +47,41 @@ class SleepyService @Inject constructor(
     }
 
     suspend fun getUserById(ownerId: Long): SleeperUser {
-        return sleeper.getUser(ownerId)
+        return sleepyCache.getUser(ownerId)
     }
 
     suspend fun getBracket(leagueId: Long, bracketType: BracketType): Bracket {
-        return sleeper.getPlayoffBracket(leagueId, bracketType)
+        return sleepyCache.getPlayoffBracket(leagueId, bracketType)
     }
 
-    data class LeagueSeason(val sport: String, val season: String, val leagues: List<SleeperLeague>)
-    suspend fun getMyWinningLeagues(userName: String, sports: List<String>, seasons: List<String>): JsonNode {
-        val fullUser = getUser(userName)
-        val leagueSeasons = sports.map { sport ->
-            seasons.map { season ->
-                LeagueSeason(sport, season, listOf())
-            }
+    suspend fun getSleeperPlayer(playerId: String, sport: String): SleeperPlayer {
+        return sleepyCache.getSleeperPlayer(playerId, sport)
+    }
+
+    data class PlayerUsage(val player: SleeperPlayer, val count: Int)
+    suspend fun getMostUsedPlayers(userName: String, sport: String, seasons: List<String>): List<PlayerUsage> {
+        val user = getUser(userName)
+        val leagues = getAllLeaguesForUser(user, listOf(sport), seasons)
+
+        val allRosters = leagues.map { season ->
+            season.leagues.map { league ->
+                getRostersForLeague(league.leagueId)
+            }.flatten()
         }.flatten()
 
-        val deferred = CoroutineScope(Dispatchers.IO).async {
-            leagueSeasons.pmapSuspend { (sport, season, _) ->
-                logger.info("Getting info for sport $sport season $season")
-                val leagues = getLeaguesForSeason(fullUser.userId, sport, season)
-                LeagueSeason(sport, season, leagues)
+        return allRosters
+            .map { it.players }
+            .flatten()
+            .groupBy { it }
+            .map {
+                PlayerUsage(getSleeperPlayer(it.key, sport), it.value.size)
             }
-        }
+    }
 
-        val allLeagues = deferred.await()
+    suspend fun getMyWinningLeagues(userName: String, sports: List<String>, seasons: List<String>): List<LeagueRoster> {
+        val fullUser = getUser(userName)
+
+        val allLeagues = getAllLeaguesForUser(fullUser, sports, seasons)
         val leagueIds = allLeagues.map { it.leagues.map { league -> league.leagueId } }.flatten()
 
         val deferredRosters = CoroutineScope(Dispatchers.IO).async {
@@ -81,18 +94,31 @@ class SleepyService @Inject constructor(
         val rosters = deferredRosters.await().toMap()
         val brackets = deferredBrackets.await().toMap()
 
-        val result = mutableListOf<Pair<SleeperLeague, SleeperRoster>>()
+        val result = mutableListOf<LeagueRoster>()
         allLeagues.forEach { (sport, season, leagues) ->
             leagues.forEach {
                 val winner = BracketInspector.getWinner(brackets[it.leagueId]!!)
                 val winningRoster = rosters[it.leagueId]!!.find { it.rosterId == winner }!!
                 if (winningRoster.ownerId == fullUser.userId) {
-                    result.add(it to winningRoster)
+                    result.add(LeagueRoster(it, winningRoster))
                 }
             }
         }
 
-        return mapper.convertValue(result, JsonNode::class.java)
+        return result
     }
 
+    private suspend fun getAllLeaguesForUser(user: SleeperUser, sports: List<String>, seasons: List<String>): List<LeagueSeason> {
+        val leagueSeasons = sports.map { sport ->
+            seasons.map { season ->
+                LeagueSeason(sport, season, listOf())
+            }
+        }.flatten()
+
+        return leagueSeasons.pmapSuspend { (sport, season, _) ->
+            logger.info("Getting info for sport $sport season $season")
+            val leagues = getLeaguesForSeason(user.userId, sport, season)
+            LeagueSeason(sport, season, leagues)
+        }
+    }
 }

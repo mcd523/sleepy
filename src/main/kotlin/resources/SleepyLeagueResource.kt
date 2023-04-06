@@ -2,10 +2,7 @@ package resources
 
 import client.model.league.bracket.BracketType
 import jakarta.inject.Inject
-import jakarta.ws.rs.GET
-import jakarta.ws.rs.Path
-import jakarta.ws.rs.PathParam
-import jakarta.ws.rs.Produces
+import jakarta.ws.rs.*
 import jakarta.ws.rs.container.AsyncResponse
 import jakarta.ws.rs.container.Suspended
 import jakarta.ws.rs.core.MediaType
@@ -16,7 +13,7 @@ import services.SleepyService
 class SleepyLeagueResource @Inject constructor(private val sleepyService: SleepyService): AsyncResource() {
 
     @GET
-    @Path("/bracket/{leagueId}")
+    @Path("/{leagueId}/bracket")
     fun getRostersForLeague(
         @Suspended response: AsyncResponse,
         @PathParam("leagueId") leagueId: Long
@@ -27,7 +24,7 @@ class SleepyLeagueResource @Inject constructor(private val sleepyService: Sleepy
     }
 
     @GET
-    @Path("/bracket/{leagueId}/{bracketType}")
+    @Path("/{leagueId}/bracket/{bracketType}")
     fun getBracketForLeague(
         @Suspended response: AsyncResponse,
         @PathParam("leagueId") leagueId: Long,
@@ -49,4 +46,19 @@ class SleepyLeagueResource @Inject constructor(private val sleepyService: Sleepy
         }
     }
 
+    @GET
+    @Path("/{userName}/winner")
+    fun getWinningLeagues(
+        @Suspended response: AsyncResponse,
+        @PathParam("userName") userName: String,
+        @QueryParam("sport") @DefaultValue("nfl") sports: List<String>,
+        @QueryParam("season") seasons: List<String>
+    ) {
+        val validatedSports = SleepyUserResource.validatedSports(sports)
+        val validatedSeasons = SleepyUserResource.validatedSeasons(seasons)
+
+        workerScope.respondAsync(response) {
+            sleepyService.getMyWinningLeagues(userName, validatedSports, validatedSeasons)
+        }
+    }
 }

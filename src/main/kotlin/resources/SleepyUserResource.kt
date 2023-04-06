@@ -16,7 +16,7 @@ class SleepyUserResource @Inject constructor(
 ): AsyncResource() {
     companion object {
         private val logger = LoggerFactory.getLogger(SleepyUserResource::class.java)
-        private val validSeasons = listOf("2018", "2019", "2020", "2021")
+        private val validSeasons = listOf("2018", "2019", "2020", "2021", "2022")
         private val validSports = listOf("nfl")
 
         fun validatedSeasons(seasons: List<String>) = validate(seasons, validSeasons, "season")
@@ -65,18 +65,18 @@ class SleepyUserResource @Inject constructor(
     }
 
     @GET
-    @Path("/winner/{userName}")
-    fun getWinningLeagues(
+    @Path("/{userName}/players/most-used")
+    fun getMostUsedPlayers(
         @Suspended response: AsyncResponse,
         @PathParam("userName") userName: String,
-        @QueryParam("sport") @DefaultValue("nfl") sports: List<String>,
+        @QueryParam("sport") @DefaultValue("nfl") sports: String,
         @QueryParam("season") seasons: List<String>
     ) {
-        val validatedSports = validatedSports(sports)
+        val validatedSports = validatedSports(listOf(sports))
         val validatedSeasons = validatedSeasons(seasons)
 
         workerScope.respondAsync(response) {
-            sleepyService.getMyWinningLeagues(userName, validatedSports, validatedSeasons)
+            sleepyService.getMostUsedPlayers(userName, validatedSports.first(), validatedSeasons)
         }
     }
 }

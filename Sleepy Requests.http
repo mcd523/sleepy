@@ -1,16 +1,13 @@
-GET http://localhost:8080/user/thehippokid?cache=true
+GET http://localhost:8080/user/thehippokid
 
 ###
-GET http://localhost:8080/user/winner/captaincarey
+GET http://localhost:8080/league/captaincarey/winner
 
 ###
-GET http://localhost:8080/league/bracket/727997364425617408/WINNER
+GET http://localhost:8080/league/727997364425617408/bracket/WINNER
 
 ###
 GET http://localhost:8080/league/727997364425617408/members
 
 ###
-GET http://localhost:8080/user/redis
-
-###
-POST http://localhost:8080/user/redis
+GET http://localhost:8080/user/thehippokid/players/most-used
