@@ -9,6 +9,6 @@ redis:
 
 mongodb:
   user: sleepy-service
-  password: GCc880NzMZ83BL6K
+  password: nope
   host: sleepy-mongodb.hw23c5f.mongodb.net/
 
