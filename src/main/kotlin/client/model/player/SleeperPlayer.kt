@@ -6,65 +6,65 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SleeperPlayer(
     @JsonProperty("hashtag")
-    val hashtag: String,
+    val hashtag: String?,
     @JsonProperty("depth_chart_position")
-    val depthChartPosition: Long,
+    val depthChartPosition: String?,
     @JsonProperty("status")
-    val status: String,
+    val status: String?,
     @JsonProperty("sport")
     val sport: String,
     @JsonProperty("fantasy_positions")
     val positions: List<String>?,
     @JsonProperty("number")
-    val number: Long,
+    val number: Long?,
     @JsonProperty("search_last_name")
-    val searchLastName: String,
+    val searchLastName: String?,
     @JsonProperty("injury_start_date")
     val injuryStartDate: String?,
     @JsonProperty("weight")
-    val weight: String,
+    val weight: String?,
     @JsonProperty("position")
-    val position: String,
+    val position: String?,
     @JsonProperty("practice_participation")
     val practiceParticipation: Any?,
     @JsonProperty("sportradar_id")
-    val sportRadarId: String,
+    val sportRadarId: String?,
     @JsonProperty("team")
-    val team: String,
+    val team: String?,
     @JsonProperty("last_name")
-    val lastName: String,
+    val lastName: String?,
     @JsonProperty("college")
-    val college: String,
+    val college: String?,
     @JsonProperty("fantasy_data_id")
-    val fantasyDataId: Long,
+    val fantasyDataId: Long?,
     @JsonProperty("injury_status")
     val injuryStatus: Any?,
     @JsonProperty("player_id")
     val playerId: String,
     @JsonProperty("height")
-    val height: String,
+    val height: String?,
     @JsonProperty("search_full_name")
-    val searchFullName: String,
+    val searchFullName: String?,
     @JsonProperty("age")
-    val age: Long,
+    val age: Long?,
     @JsonProperty("stats_id")
-    val statsId: String,
+    val statsId: String?,
     @JsonProperty("birth_country")
-    val birthCountry: String,
+    val birthCountry: String?,
     @JsonProperty("espn_id")
-    val espnId: String,
+    val espnId: String?,
     @JsonProperty("search_rank")
-    val searchRank: Long,
+    val searchRank: Long?,
     @JsonProperty("first_name")
-    val firstName: String,
+    val firstName: String?,
     @JsonProperty("depth_chart_order")
-    val depthChartOrder: Long,
+    val depthChartOrder: Long?,
     @JsonProperty("rotowire_id")
     val rotowireId: Long?,
     @JsonProperty("rotoworld_id")
     val rotoworldId: Long?,
     @JsonProperty("search_first_name")
-    val searchFirstName: String,
+    val searchFirstName: String?,
     @JsonProperty("yahoo_id")
     val yahooId: Long?,
 )

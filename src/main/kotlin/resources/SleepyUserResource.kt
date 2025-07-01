@@ -6,13 +6,15 @@ import jakarta.ws.rs.container.AsyncResponse
 import jakarta.ws.rs.container.Suspended
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import mongodb.SleepyMongoClient
 import org.slf4j.LoggerFactory
 import services.SleepyService
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 class SleepyUserResource @Inject constructor(
-    private val sleepyService: SleepyService
+    private val sleepyService: SleepyService,
+    private val mongoClient: SleepyMongoClient
 ): AsyncResource() {
     companion object {
         private val logger = LoggerFactory.getLogger(SleepyUserResource::class.java)
@@ -77,6 +79,16 @@ class SleepyUserResource @Inject constructor(
 
         workerScope.respondAsync(response) {
             sleepyService.getMostUsedPlayers(userName, validatedSports.first(), validatedSeasons)
+        }
+    }
+
+    @GET
+    @Path("/mongo")
+    fun getMongo(
+        @Suspended response: AsyncResponse
+    ) {
+        workerScope.respondAsync(response) {
+            mongoClient.doThing()
         }
     }
 }

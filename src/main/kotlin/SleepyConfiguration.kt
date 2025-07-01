@@ -14,4 +14,9 @@ class SleepyConfiguration: Configuration() {
 
     @JsonProperty
     var redis: RedisConfiguration = RedisConfiguration()
+
+    data class MongoDbConfiguration(val user: String? = null, val password: String? = null, val host: String? = null)
+
+    @JsonProperty
+    var mongodb: MongoDbConfiguration = MongoDbConfiguration()
 }

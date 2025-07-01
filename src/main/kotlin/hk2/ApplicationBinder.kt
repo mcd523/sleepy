@@ -3,6 +3,7 @@ package hk2
 import client.SleeperClient
 import jakarta.inject.Singleton
 import jakarta.ws.rs.client.Client
+import mongodb.SleepyMongoClient
 import org.glassfish.hk2.utilities.binding.AbstractBinder
 import redis.SleepyCache
 import services.SleepyService
@@ -14,6 +15,7 @@ class ApplicationBinder(private val client: Client): AbstractBinder() {
 
         bindAsContract(SleepyService::class.java).`in`(Singleton::class.java)
         bindAsContract(SleepyCache::class.java).`in`(Singleton::class.java)
+        bindAsContract(SleepyMongoClient::class.java).`in`(Singleton::class.java)
 
         bindAsContract(SleeperClient::class.java).`in`(Singleton::class.java)
     }

@@ -27,7 +27,7 @@ class SleepyCache @Inject constructor(
         private val logger = LoggerFactory.getLogger(SleepyCache::class.java)
         private fun buildRedisClient(redisConfig: SleepyConfiguration.RedisConfiguration): KredsClient {
             return newClient(Endpoint(redisConfig.host!!, redisConfig.port!!)).also {
-                //runBlocking { it.auth(redisConfig.password!!) }
+                runBlocking { it.auth(redisConfig.password!!) }
             }
         }
     }

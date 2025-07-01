@@ -22,6 +22,8 @@ dependencies {
     implementation("org.jdbi:jdbi3-core:$jdbiVersion")
     implementation("org.jdbi:jdbi3-kotlin:$jdbiVersion")
 
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
+
     implementation("io.github.crackthecodeabhi:kreds:0.8.1")
     implementation("com.michael-bull.kotlin-retry:kotlin-retry:1.0.9")
 

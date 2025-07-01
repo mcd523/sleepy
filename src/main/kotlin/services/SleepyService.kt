@@ -13,6 +13,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.*
 import org.jvnet.hk2.annotations.Service
 import org.slf4j.LoggerFactory
+import pmap
 import pmapSuspend
 import redis.SleepyCache
 
@@ -70,15 +71,18 @@ class SleepyService @Inject constructor(
         }.flatten()
 
         return allRosters
-            .map { it.players }
+            .mapNotNull { it.players }
             .flatten()
             .groupBy { it }
             .map {
                 PlayerUsage(getSleeperPlayer(it.key, sport), it.value.size)
             }
+            .sortedByDescending { it.count }
     }
 
-    suspend fun getMyWinningLeagues(userName: String, sports: List<String>, seasons: List<String>): List<LeagueRoster> {
+    data class PlayerResults(val userName: String, val totalLeagues: Int, val winningLeagues: Int, val winningPercentage: Float, val seasonResults: List<PlayerSeasonResults> = listOf(), val winningRosters: List<LeagueRoster> = listOf())
+    data class PlayerSeasonResults(val season: String, val sport: String, val totalLeagues: Int, val winningLeagues: Int, val winningPercentage: Float)
+    suspend fun getMyWinningLeagues(userName: String, sports: List<String>, seasons: List<String>): PlayerResults {
         val fullUser = getUser(userName)
 
         val allLeagues = getAllLeaguesForUser(fullUser, sports, seasons)
@@ -96,16 +100,44 @@ class SleepyService @Inject constructor(
 
         val result = mutableListOf<LeagueRoster>()
         allLeagues.forEach { (sport, season, leagues) ->
-            leagues.forEach {
-                val winner = BracketInspector.getWinner(brackets[it.leagueId]!!)
-                val winningRoster = rosters[it.leagueId]!!.find { it.rosterId == winner }!!
+            leagues.forEach leagues@{ league ->
+                val winner = BracketInspector.getWinner(brackets[league.leagueId]!!) ?: return@leagues
+                val winningRoster = rosters[league.leagueId]!!.find { it.rosterId == winner }!!
                 if (winningRoster.ownerId == fullUser.userId) {
-                    result.add(LeagueRoster(it, winningRoster))
+                    val winningStarters = winningRoster.starters
+                    val winningPlayers = winningRoster.players
+                    val finalRoster = winningRoster.copy(
+                        fullStarters = winningStarters.map { playerId ->
+                            getSleeperPlayer(playerId, sport)
+                        },
+                        fullPlayers = winningPlayers.map { playerId ->
+                            getSleeperPlayer(playerId, sport)
+                        }
+                    )
+                    result.add(LeagueRoster(league, finalRoster))
                 }
             }
         }
 
-        return result
+        val seasonResults = allLeagues.map {(sport, season, leagues) ->
+            val totalLeagues = leagues.size
+            val winningLeagues = result.filter { it.league.season == season && it.league.sport == sport }.size
+            val winningPercentage = if (winningLeagues > 0 && totalLeagues > 0) {
+                winningLeagues.toFloat().div(totalLeagues)
+            } else {
+                0F
+            }
+            PlayerSeasonResults(season, sport, totalLeagues, winningLeagues, winningPercentage)
+        }
+
+        return PlayerResults(
+            userName = userName,
+            totalLeagues = rosters.size,
+            winningLeagues = result.size,
+            winningPercentage = (result.size.toFloat() / rosters.size),
+            seasonResults = seasonResults,
+            winningRosters = result
+        )
     }
 
     private suspend fun getAllLeaguesForUser(user: SleeperUser, sports: List<String>, seasons: List<String>): List<LeagueSeason> {

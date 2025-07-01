@@ -4,8 +4,8 @@ import client.model.league.bracket.Bracket
 
 object BracketInspector {
     // Return teamId of winning team from bracket
-    fun getWinner(bracket: Bracket): Int {
-        if (!isFinished(bracket)) throw RuntimeException("Bracket is not finished yet")
+    fun getWinner(bracket: Bracket): Int? {
+        if (!isFinished(bracket)) return null
         val rounds = bracket.groupBy { it.round }
         val finalRound = rounds.toList().maxByOrNull { it.first }!!.second
 
