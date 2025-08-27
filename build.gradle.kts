@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
 }
 
-val jdbiVersion = "3.37.1"
+val jdbiVersion = "3.38.0"
 val junitVersion = "5.9.2"
 val kotlinCoroutinesVersion = "1.6.4"
 
