@@ -10,7 +10,7 @@ repositories {
 }
 
 val jdbiVersion = "3.37.1"
-val junitVersion = "5.9.2"
+val junitVersion = "5.9.3"
 val kotlinCoroutinesVersion = "1.6.4"
 
 dependencies {
